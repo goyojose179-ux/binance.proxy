@@ -11,14 +11,12 @@ app.get('/', (req, res) => {
     res.send('Proxy de Binance activo y funcionando correctamente.');
 });
 
+// Proxy para /api, /sapi y /bapi manteniendo la ruta completa
 app.use(
-    '/api',
+    ['/api', '/sapi', '/bapi'],
     createProxyMiddleware({
         target: 'https://api.binance.com',
         changeOrigin: true,
-        pathRewrite: {
-            '^/api': '',
-        },
     })
 );
 

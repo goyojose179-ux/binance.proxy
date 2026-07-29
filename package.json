@@ -1,14 +1,26 @@
-{
-  "name": "binance-proxy",
-  "version": "1.0.0",
-  "description": "Proxy para Binance",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "http-proxy-middleware": "^2.0.6"
-  }
-}
+const express = require('express');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const cors = require('cors');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+
+app.get('/', (req, res) => {
+    res.send('Proxy de Binance activo y funcionando correctamente.');
+});
+
+// Proxy para /api, /sapi y /bapi sin recortar la ruta
+app.use(
+    ['/api', '/sapi', '/bapi'],
+    createProxyMiddleware({
+        target: 'https://api.binance.com',
+        changeOrigin: true,
+        // No usamos pathRewrite para que la ruta llegue completa a Binance
+    })
+);
+
+app.listen(PORT, () => {
+    console.log(`Proxy corriendo en el puerto ${PORT}`);
+});
